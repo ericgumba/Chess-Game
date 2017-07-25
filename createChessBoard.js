@@ -3,7 +3,6 @@ function createBoard() {
     let strHTML = "";
     let alphabets = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
-    strHTML = '<div id="chessboard">';
     for (var row = 0; row < 8; row++) {
         strHTML += "<div>";
         for (var column = 0; column < 8; column++) {
@@ -17,9 +16,7 @@ function createBoard() {
         strHTML += "</div>";
     }
 
-    strHTML += "</div>";
 
 
-    document.getElementById('chessboard2').innerHTML = strHTML;
+    document.getElementById('chessboard').innerHTML = strHTML;
 };
-// createBoard();
