@@ -8,7 +8,8 @@ function createBoard() {
         for (var column = 0; column < 8; column++) {
 
             if ((column + row) % 2 == 0) {
-                strHTML += `<div class="white_square" id="${alphabets[column]}${8-row}"></div>`;
+                strHTML += `<div class="white_square" id="${alphabets[column]}${8-row}"
+                ondrop="drop(event)" ondragover="allowDrop(event)"></div>`;
             } else {
                 strHTML += `<div class="black_square" id="${alphabets[column]}${8-row}"></div>`;
             }
