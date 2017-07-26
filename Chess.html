@@ -11,11 +11,30 @@
     <link href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="CreateChessBoard.js"></script>
+    <script>
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.id);
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            var data = ev.dataTransfer.getData("text");
+            ev.target.appendChild(document.getElementById(data));
+        }
+    </script>
 </head>
 
 
 <body onload="createBoard()">
     <div id="chessboard"> </div>
+
+    <div>
+        <img src="/Users/ericgumba/Chess-Game/images/wP.png" draggable="true" ondragstart="drag(event)" id="drag1" width="50" height="50">
+    </div>
 
 
 </body>
