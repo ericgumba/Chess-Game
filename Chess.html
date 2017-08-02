@@ -10,13 +10,20 @@
     <link rel="stylesheet" type="text/css" href="ChessBoardStyle.css" />
     <link href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="CreateChessBoard.js"></script>
+    <script type="text/javascript" src="CreateChessBoard.js"></script>
+
+    <script>
+        $("#myName").click(function() {
+            $("#myName").hide();
+        });
+    </script>
     <script>
         function allowDrop(ev) {
             ev.preventDefault();
         }
 
         function drag(ev) {
+
             ev.dataTransfer.setData("text", ev.target.id);
         }
 
@@ -26,17 +33,31 @@
             ev.target.appendChild(document.getElementById(data));
         }
     </script>
+    <!-- <script type="text/javascript">
+        $("#drag").drag({
+            drag: function(event, ui) {}
+        });
+    </script> -->
+    <!-- <script>
+        $(document).ready(function() {
+            $("button").click(function() {
+                $("#myName").hide();
+            });
+        });
+    </script> -->
 </head>
 
 
 <body onload="createBoard()">
     <div id="chessboard"> </div>
 
-    <div>
-        <img src="/Users/ericgumba/Chess-Game/images/wP.png" draggable="true" ondragstart="drag(event)" id="drag1" width="50" height="50">
+    <div id="pawn"> </div>
+
+
+    <button id="butty" type="button" onclick="cool()">text</button>
+    <div id="myName">
+        Eric Gumba
     </div>
-
-
 </body>
 
 </html>
