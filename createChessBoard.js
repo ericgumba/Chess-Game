@@ -1,119 +1,112 @@
- function allowDrop(ev) {
-     ev.preventDefault();
- }
+var cannon;
+var chessMap = new Map();
+var pieces = [];
 
- function drag(ev) {
+function piece(color, pieceType, image, isCaptured, currentSquare) {
 
-     ev.dataTransfer.setData("text", ev.target.id);
- }
+    this.color = color;
+    this.pieceType = pieceType;
+    this.image = image;
+    this.isCaptured = isCaptured;
+    this.currentSquare = currentSquare;
 
- function drop(ev) {
-     ev.preventDefault();
-     var data = ev.dataTransfer.getData("text");
-     ev.target.appendChild(document.getElementById(data));
- }
-
- function createBoard() {
-
-     let strHTML = "";
-     let alphabets = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-
-     for (var row = 0; row < 8; row++) {
-         strHTML += "<div>";
-         for (var column = 0; column < 8; column++) {
-             if ((column + row) % 2 === 0) {
-                 if (row === 1) {
-                     strHTML += `<div class="white_square" id="${alphabets[column]}${8-row}"
-                ondrop="drop(event)" ondragover="allowDrop(event)">
-                <img src="images/wP.png" 
-                draggable="true" ondragstart="drag(event)" id="p${row}${column}" width="50" height="50">
-                </div>`;
-
-                 } else if (row === 6) {
-                     strHTML += `<div class="white_square" id="${alphabets[column]}${8-row}"
-                ondrop="drop(event)" ondragover="allowDrop(event)">
-                <img src="images/bP.png" 
-                draggable="true" ondragstart="drag(event)" id="p${row}${column}" width="50" height="50">
-                </div>`;
-                 } else {
-                     strHTML += `<div class="white_square" id="${alphabets[column]}${8-row}"
-                ondrop="drop(event)" ondragover="allowDrop(event)"></div>`;
-                 }
-             } else {
-
-                 if (row === 1) {
-                     strHTML += `<div class="black_square" id="${alphabets[column]}${8-row}"
-                ondrop="drop(event)" ondragover="allowDrop(event)">
-                <img src="images/wP.png" 
-                draggable="true" ondragstart="drag(event)" id="p${row}${column}" width="50" height="50">
-                </div>`;
+};
 
 
-                 } else if (row === 6) {
-                     var piece = "p" + row + column;
-                     strHTML += `<div class="black_square" id="${alphabets[column]}${8-row}"
-                ondrop="drop(event)" ondragover="allowDrop(event)">
-                <img src="images/bP.png" 
-                draggable="true" ondragstart="drag(event)" id="p${row}${column}" width="50" height="50">
-                </div>`;
-                 } else {
-                     strHTML += `<div class="black_square" id="${alphabets[column]}${8-row}"
-                ondrop="drop(event)" ondragover="allowDrop(event)"></div>`;
-                 }
-             }
-         }
-         strHTML += "</div>";
-     }
-     // document.getElementById('chessboard').innerHTML = strHTML;
-     $("#chessboard").html(strHTML);
- };
+function dropPiece(ev) {
+    if ($(ev.target).css("background-color") === "rgb(0, 128, 0)") {
+        alert("good job eric");
+        alert(cannon);
+        ev.target.appendChild(cannon);
+    } else {
+        var k = $(".white_square").css("background-color");
+        alert(k);
+    }
+}
 
- $("#myName").on("click", function() {
-     $(this).slideUp();
- });
+function allowDrop(ev) {
+    ev.preventDefault();
+}
 
- function cool() {
-     $("#myName").hide();
- };
+function drag(ev) {
 
- function factorial(n) {
-     if (n === 1) {
-         return 1;
-     }
-     return n * factorial(n - 1);
- }
+    ev.dataTransfer.setData("text", ev.target.id);
+}
 
- $(document).ready(function() {
+function drop(ev) {
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("text");
+    ev.target.appendChild(document.getElementById(data));
+}
 
 
-     function piece(color, pieceType, image, isCaptured, currentSquare) {
+function createBoard() {
 
-         this.color = color;
-         this.pieceType = pieceType;
-         this.image = image;
-         this.isCaptured = isCaptured;
-         this.currentSquare = currentSquare;
+    let strHTML = "";
+    let alphabets = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
-     };
+    let strr = "asd"
+    for (var row = 0; row < 8; row++) {
+        strHTML += "<div>";
+        for (var column = 0; column < 8; column++) {
+            if ((column + row) % 2 === 0) {
+                strHTML += `<div class="white_square" id="${alphabets[column]}${8-row}"
+                ondrop="drop(event)" onclick="dropPiece(event)"></div>`;
+            } else {
+                strHTML += `<div class="black_square" id="${alphabets[column]}${8-row}"
+                ondrop="drop(event)" onclick="dropPiece(event)"></div>`;
+            }
+        }
+        strHTML += "</div>";
+    }
+    $("#chessboard").html(strHTML);
+};
+
+
+$(document).ready(function() {
+
+    initializePieces();
+    var whitePawn = new piece("white", "pawn", "/Users/ericgumba/Chess-Game/images/wP.png", false, ['a', 2]);
+    var blackPawn = new piece("black", "pawn", "/Users/ericgumba/Chess-Game/images/bP.png", false, ['a', 7]);
+
+    $("#whitePawn").html(`<img src=${whitePawn.image} width="50" height="50">`);
+    $("#blackPawn").html(`<img src=${blackPawn.image} width="50" height="50">`);
+
+    alert("you're amazing =)");
+
+
+    $("#whitePawn").click(function() {
+        resetColors();
+        load(this);
+        $("#a" + (whitePawn.currentSquare[1]) - 1).css("background-color", "green");
+
+    });
+
+    $("#blackPawn").click(function() {
+        resetColors();
+        load(this);
+        $("#a" + (blackPawn.currentSquare[1] - 1).toString()).css("background-color", "green");
+
+        blackPawn.currentSquare[1] = blackPawn.currentSquare[1] - 1;
+
+    });
+});
+
+function initializePieces() {
 
 
 
-     var pawn = new piece("white", "pawn", "/Users/ericgumba/Chess-Game/images/wP.png", false, ['a', '2']);
+};
 
+function resetColors() {
+    $(".white_square").each(function() {
+        $(this).css("background-color", "#FFFFFF");
+    });
+    $(".black_square").each(function() {
+        $(this).css("background-color", "#444444");
+    });
+};
 
-     $("#pawn").html(`<img src=${pawn.image} width="50" height="50">`);
-
-     alert("you're amazing =)");
-     // Your code here.
-
-     $("#drag").click(function() {
-         $(this).drag();
-     });
-
-
-     $("#myName").click(function() {
-
-         alert("wow! =D");
-     });
-
- });
+function load(chessPiece) {
+    cannon = chessPiece;
+};

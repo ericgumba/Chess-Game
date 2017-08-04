@@ -12,47 +12,15 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript" src="CreateChessBoard.js"></script>
 
-    <script>
-        $("#myName").click(function() {
-            $("#myName").hide();
-        });
-    </script>
-    <script>
-        function allowDrop(ev) {
-            ev.preventDefault();
-        }
-
-        function drag(ev) {
-
-            ev.dataTransfer.setData("text", ev.target.id);
-        }
-
-        function drop(ev) {
-            ev.preventDefault();
-            var data = ev.dataTransfer.getData("text");
-            ev.target.appendChild(document.getElementById(data));
-        }
-    </script>
-    <!-- <script type="text/javascript">
-        $("#drag").drag({
-            drag: function(event, ui) {}
-        });
-    </script> -->
-    <!-- <script>
-        $(document).ready(function() {
-            $("button").click(function() {
-                $("#myName").hide();
-            });
-        });
-    </script> -->
 </head>
 
 
 <body onload="createBoard()">
     <div id="chessboard"> </div>
 
-    <div id="pawn"> </div>
+    <div id="whitePawn"> </div>
 
+    <div id="blackPawn"> </div>
 
     <button id="butty" type="button" onclick="cool()">text</button>
     <div id="myName">
