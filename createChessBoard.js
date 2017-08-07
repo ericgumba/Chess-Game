@@ -81,31 +81,9 @@ function createBoard() {
 $(document).ready(function() {
 
     initializePieces();
-    var whitePawn = new piece("white", "pawn", "/Users/ericgumba/Chess-Game/images/wP.png", false, ['a', 2]);
-    var blackPawn = new piece("black", "pawn", "/Users/ericgumba/Chess-Game/images/bP.png", false, ['a', 7]);
-
-    $("#whitePawn").html(`<img src=${whitePawn.image} width="50" height="50">`);
-    $("#blackPawn").html(`<img src=${blackPawn.image} width="50" height="50">`);
-
     alert("you're amazing =)");
 
 
-    $("#whitePawn").click(function() {
-        resetColors();
-        load(this);
-        $("#a" + (whitePawn.currentSquare[1]) - 1).css("background-color", "green");
-
-    });
-
-    $("#blackPawn").click(function() {
-        resetColors();
-        load(this);
-        alert($(this).id);
-        $("#a" + (blackPawn.currentSquare[1] - 1).toString()).css("background-color", "green");
-
-        blackPawn.currentSquare[1] = blackPawn.currentSquare[1] - 1;
-
-    });
 
 });
 
@@ -143,7 +121,7 @@ function highlightedWP(event) {
 
     }
     $(`#${currentHighlightedPiece.currentSquare[0]}${currentHighlightedPiece.currentSquare[1]+1}`).css("background-color", "green");
-}
+};
 
 
 function resetColors() {
