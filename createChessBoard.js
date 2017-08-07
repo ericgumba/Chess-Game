@@ -15,7 +15,7 @@ function piece(color, pieceType, image, isCaptured, currentSquare) {
 function pawn(color, pieceType, image, isCaptured, currentSquare, canAdvanceTwice) {
     piece.call(this, color, pieceType, image, isCaptured, currentSquare);
     this.canAdvanceTwice = canAdvanceTwice;
-}
+};
 
 
 function dropPiece(ev) {
@@ -37,22 +37,22 @@ function dropPiece(ev) {
         }
         resetColors();
     }
-}
+};
 
 function allowDrop(ev) {
     ev.preventDefault();
-}
+};
 
 function drag(ev) {
 
     ev.dataTransfer.setData("text", ev.target.id);
-}
+};
 
 function drop(ev) {
     ev.preventDefault();
     var data = ev.dataTransfer.getData("text");
     ev.target.appendChild(document.getElementById(data));
-}
+};
 
 
 function createBoard() {
