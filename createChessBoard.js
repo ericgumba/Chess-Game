@@ -4,16 +4,17 @@ var pieces = [];
 
 function piece(color, pieceType, image, isCaptured, currentSquare) {
 
-    this.color = color;
-    this.pieceType = pieceType;
-    this.image = image;
-    this.isCaptured = isCaptured;
-    this.currentSquare = currentSquare;
+    this.color = color; // string
+    this.pieceType = pieceType; // string
+    this.image = image; // string
+    this.isCaptured = isCaptured; // bool
+    this.currentSquare = currentSquare; // tuple
 
 };
 
-class pawn extends piece() {
-
+function pawn(color, pieceType, image, isCaptured, currentSquare, canAdvanceTwice) {
+    piece.call(this, color, pieceType, image, isCaptured, currentSquare);
+    this.canAdvanceTwice = canAdvanceTwice;
 }
 
 
@@ -21,16 +22,19 @@ function dropPiece(ev) {
 
     if ($(ev.target).css("background-color") === "rgb(0, 128, 0)") {
 
+
         var squareAlphabet = ev.target.id.charAt(0);
         var squareNumber = parseInt(ev.target.id.charAt(1));
-        var pieceAlphabet = chessMap.get(cannon.id);
-        var pieceNumber = chessMap.get(cannon.id);
+        var pieceMoved = chessMap.get(cannon.id);
 
 
         ev.target.appendChild(cannon);
 
-        pieceAlphabet.currentSquare[0] = squareAlphabet;
-        pieceNumber.currentSquare[1] = squareNumber;
+        pieceMoved.currentSquare[0] = squareAlphabet;
+        pieceMoved.currentSquare[1] = squareNumber;
+        if (pieceMoved instanceof pawn) {
+            pieceMoved.canAdvanceTwice = false;
+        }
         resetColors();
     }
 }
@@ -103,14 +107,6 @@ $(document).ready(function() {
 
     });
 
-    // $(".pawn").each(function() {
-    //     $(this).click(function() {
-    //         resetColors();
-    //         load(this);
-    //         alert(chessMap.get($(this).id));
-
-    //     });
-    // });
 });
 
 function initializePieces() {
@@ -118,12 +114,12 @@ function initializePieces() {
     let alphabets = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
     // this line is necessary because the for loop uses the properties of whitePawn to create images/ 
-    var whitePawn = new piece("white", "pawn", "/Users/ericgumba/Chess-Game/images/wP.png", false, ['a', 2]);
+    var whitePawn = new pawn("white", "pawn", "/Users/ericgumba/Chess-Game/images/wP.png", false, ['a', 2], true);
 
     // todo: hashmap this bitch.
     for (var i = 0; i < 8; i++) {
-        pieces.push(new piece("white", "pawn", "/Users/ericgumba/Chess-Game/images/wP.png", false, [alphabets[i], 2]));
-        $("#" + alphabets[i] + "2").append(`<img src=${whitePawn.image} id="whitePawn${i+1}" class="pawn" onclick="highlight(event)" width="50" height="50">`);
+        pieces.push(new pawn("white", "pawn", "/Users/ericgumba/Chess-Game/images/wP.png", false, [alphabets[i], 2], true));
+        $("#" + alphabets[i] + "2").append(`<img src=${whitePawn.image} id="whitePawn${i+1}" class="pawn" onclick="highlightedWP(event)" width="50" height="50">`);
         chessMap.set(`whitePawn${i+1}`, pieces[i]);
     }
 
@@ -133,13 +129,19 @@ function initializePieces() {
 // This function highlights possible square moves and is called when a piece is clicked on. The onClick function 
 // is declared in initializePieces()
 
-function highlight(event) {
+function highlightedWP(event) {
     resetColors();
     load(event.target);
     var currentHighlightedPiece = chessMap.get(event.target.id);
 
+    alert(currentHighlightedPiece.canAdvanceTwice);
 
     // 
+    if (currentHighlightedPiece.canAdvanceTwice === true) {
+        $(`#${currentHighlightedPiece.currentSquare[0]}${currentHighlightedPiece.currentSquare[1]+1}`).css("background-color", "green");
+        $(`#${currentHighlightedPiece.currentSquare[0]}${currentHighlightedPiece.currentSquare[1]+2}`).css("background-color", "green");
+
+    }
     $(`#${currentHighlightedPiece.currentSquare[0]}${currentHighlightedPiece.currentSquare[1]+1}`).css("background-color", "green");
 }
 
