@@ -12,15 +12,26 @@ function piece(color, pieceType, image, isCaptured, currentSquare) {
 
 };
 
+class pawn extends piece() {
+
+}
+
 
 function dropPiece(ev) {
+
     if ($(ev.target).css("background-color") === "rgb(0, 128, 0)") {
-        alert("good job eric");
-        alert(cannon);
+
+        var squareAlphabet = ev.target.id.charAt(0);
+        var squareNumber = parseInt(ev.target.id.charAt(1));
+        var pieceAlphabet = chessMap.get(cannon.id);
+        var pieceNumber = chessMap.get(cannon.id);
+
+
         ev.target.appendChild(cannon);
-    } else {
-        var k = $(".white_square").css("background-color");
-        alert(k);
+
+        pieceAlphabet.currentSquare[0] = squareAlphabet;
+        pieceNumber.currentSquare[1] = squareNumber;
+        resetColors();
     }
 }
 
@@ -85,18 +96,53 @@ $(document).ready(function() {
     $("#blackPawn").click(function() {
         resetColors();
         load(this);
+        alert($(this).id);
         $("#a" + (blackPawn.currentSquare[1] - 1).toString()).css("background-color", "green");
 
         blackPawn.currentSquare[1] = blackPawn.currentSquare[1] - 1;
 
     });
+
+    // $(".pawn").each(function() {
+    //     $(this).click(function() {
+    //         resetColors();
+    //         load(this);
+    //         alert(chessMap.get($(this).id));
+
+    //     });
+    // });
 });
 
 function initializePieces() {
 
+    let alphabets = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+
+    // this line is necessary because the for loop uses the properties of whitePawn to create images/ 
+    var whitePawn = new piece("white", "pawn", "/Users/ericgumba/Chess-Game/images/wP.png", false, ['a', 2]);
+
+    // todo: hashmap this bitch.
+    for (var i = 0; i < 8; i++) {
+        pieces.push(new piece("white", "pawn", "/Users/ericgumba/Chess-Game/images/wP.png", false, [alphabets[i], 2]));
+        $("#" + alphabets[i] + "2").append(`<img src=${whitePawn.image} id="whitePawn${i+1}" class="pawn" onclick="highlight(event)" width="50" height="50">`);
+        chessMap.set(`whitePawn${i+1}`, pieces[i]);
+    }
 
 
 };
+
+// This function highlights possible square moves and is called when a piece is clicked on. The onClick function 
+// is declared in initializePieces()
+
+function highlight(event) {
+    resetColors();
+    load(event.target);
+    var currentHighlightedPiece = chessMap.get(event.target.id);
+
+
+    // 
+    $(`#${currentHighlightedPiece.currentSquare[0]}${currentHighlightedPiece.currentSquare[1]+1}`).css("background-color", "green");
+}
+
 
 function resetColors() {
     $(".white_square").each(function() {
