@@ -6,6 +6,8 @@ var cannon;
 var chessMap = new Map();
 var pieces = [];
 var playerTurn = 1;
+var isWhiteKingChecked = false;
+var isBlackKingChecked = false;
 
 const alphabets = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
@@ -57,7 +59,7 @@ function highlightKingSquares(kng) {
                 // do nothing
 
             } else // threats need two arguments, 
-            if (!(rookThreat(kng) ||
+            if (!(isRookThreat(kng) ||
                     isBishopThreat(column, numberPointer, kng.color) ||
                     pawnThreat(kng) ||
                     horseThreat(kng) ||
@@ -78,7 +80,7 @@ function highlightKingSquares(kng) {
     }
 };
 
-function rookThreat(kng) {
+function isRookThreat(kng) {
     return false;
 }
 
@@ -86,20 +88,20 @@ function isBishopThreat(column, numberPointer, kingsColor) {
 
     // if one of dBL, dBR ... etc... is true, we return true. 
 
-    var diagBottomLeftSearchHasNoThreat = searchDiagBottomLeft(column, numberPointer, kingsColor);
+    var diagBottomLeftSearchHasThreat = searchDiagBottomLeft(column, numberPointer, kingsColor);
 
-    var diagBottomRightSearchHasNoThreat = searchDiagBottomRight(column, numberPointer, kingsColor);
+    var diagBottomRightSearchHasThreat = searchDiagBottomRight(column, numberPointer, kingsColor);
 
-    var diagTopRightSearchHasNoThreat = searchDiagTopRight(column, numberPointer, kingsColor);
+    var diagTopRightSearchHasThreat = searchDiagTopRight(column, numberPointer, kingsColor);
 
-    var diagTopLeftSearchHasNoThreat = searchDiagTopLeft(column, numberPointer, kingsColor);
+    var diagTopLeftSearchHasThreat = searchDiagTopLeft(column, numberPointer, kingsColor);
 
 
 
-    if (diagBottomLeftSearchHasNoThreat === true &&
-        diagBottomRightSearchHasNoThreat === true &&
-        diagTopRightSearchHasNoThreat === true &&
-        diagTopLeftSearchHasNoThreat === true) {
+    if (diagBottomLeftSearchHasThreat === false &&
+        diagBottomRightSearchHasThreat === false &&
+        diagTopRightSearchHasThreat === false &&
+        diagTopLeftSearchHasThreat === false) {
 
         return false;
 
