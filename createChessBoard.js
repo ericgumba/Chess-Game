@@ -2,6 +2,13 @@
 // sub-goal: highlight a piece if it contains a capturable piece    dropPiece is the place to focus on
 
 
+// problem if king is threatened, but another piece can capture the threat, we need to highlight that square 
+// and only that square. 
+
+// need to add properties, one to piece called "threatens king"
+// another to king called number of threats. 
+//
+
 var cannon;
 var chessMap = new Map();
 var pieces = [];
@@ -27,8 +34,13 @@ function piece(color, pieceType, image, isCaptured, currentSquare) {
     this.isCaptured = isCaptured; // bool
     this.currentSquare = currentSquare; // tuple
 
-    this.searchForKing = function() {
+    this.threatensKing = false;
 
+    this.searchForKing = function(event) {
+
+        if (this.pieceType === "knight") {
+            this.horseMovement(this);
+        }
 
     };
 
@@ -36,6 +48,9 @@ function piece(color, pieceType, image, isCaptured, currentSquare) {
 
 function king(color, pieceType, image, isCaptured, currentSquare) {
     piece.call(this, color, pieceType, image, isCaptured, currentSquare);
+    this.numberOfThreats = 0;
+
+
     this.kingMovement = function(event) {
 
         if (playerTurn === 1 && this.color === "white" || playerTurn === 2 && this.color === "black") {
@@ -43,51 +58,50 @@ function king(color, pieceType, image, isCaptured, currentSquare) {
             resetColors();
             load(event.target);
 
-            highlightKingSquares(this);
+            this.highlightKingSquares(this);
 
 
         }
     }
+    this.highlightKingSquares = function(kng) {
+        var numberPointer = kng.currentSquare[1] + 1;
+        for (var layer = 0; layer < 3; layer++) {
+            for (var square = 0; square < 3; square++) {
 
-};
+                var column = alphabetPositions.get(alphabetPositionsKeys.get(kng.currentSquare[0]) - 1 + square);
 
-function highlightKingSquares(kng) {
+                if (square === 1 && numberPointer === kng.currentSquare[1]) {
+                    // Check to see if there is any direct threats. If so, we set the globalVariable, 
+                    // isWhiteKingChecked or isBlackKingChecked to true.
 
-    var numberPointer = kng.currentSquare[1] + 1;
-    for (var layer = 0; layer < 3; layer++) {
-        for (var square = 0; square < 3; square++) {
+                    if (isBishopThreat(column, numberPointer, kng.color)) {
+                        isWhiteKingChecked = true;
+                    }
 
-            var column = alphabetPositions.get(alphabetPositionsKeys.get(kng.currentSquare[0]) - 1 + square);
+                } else // threats need two arguments, 
+                if (!(isRookThreat(kng) ||
+                        isBishopThreat(column, numberPointer, kng.color) ||
+                        pawnThreat(kng) ||
+                        horseThreat(kng) ||
+                        queenThreat(kng) ||
+                        kingThreat(kng))
 
-            if (square === 1 && numberPointer === kng.currentSquare[1]) {
-                // Check to see if there is any direct threats. If so, we set the globalVariable, 
-                // isWhiteKingChecked or isBlackKingChecked to true.
+                ) {
 
-                if (isBishopThreat(column, numberPointer, kng.color)) {
-                    isWhiteKingChecked === true;
+                    // $ letter = , number = numberPointer . css . green
+                    $(`#${column}${numberPointer}`).
+                    css("background-color", "green");
+
                 }
 
-            } else // threats need two arguments, 
-            if (!(isRookThreat(kng) ||
-                    isBishopThreat(column, numberPointer, kng.color) ||
-                    pawnThreat(kng) ||
-                    horseThreat(kng) ||
-                    queenThreat(kng) ||
-                    kingThreat(kng))
-
-            ) {
-
-                // $ letter = , number = numberPointer . css . green
-                $(`#${column}${numberPointer}`).
-                css("background-color", "green");
-
             }
+            numberPointer--;
 
         }
-        numberPointer--;
+    };
 
-    }
 };
+
 
 function isRookThreat(kng) {
     return false;
@@ -251,7 +265,7 @@ function kingThreat(kng) {
 function knight(color, pieceType, image, isCaptured, currentSquare) {
     piece.call(this, color, pieceType, image, isCaptured, currentSquare);
     this.horseMovement = function(event) {
-        if (playerTurn === 1 && this.color === "white" && isWhiteKingChecked === false || playerTurn === 2 && this.color === "black") {
+        if (playerTurn === 1 && this.color === "white" && !isWhiteKingChecked || playerTurn === 2 && this.color === "black" && !isBlackKingChecked) {
             resetColors();
             load(event.target);
 
@@ -270,21 +284,51 @@ function knight(color, pieceType, image, isCaptured, currentSquare) {
                 $(upperRightMovement).css("background-color", "green");
                 $(lowerRightMovement).css("background-color", "green");
 
+                var arrayOfHorseMovements = [];
 
-                this.checkKing(upperLeftMovement, lowerLeftMovement, upperRightMovement, lowerRightMovement);
+                arrayOfHorseMovements.push(upperLeftMovement, upperRightMovement, lowerLeftMovement, lowerRightMovement);
 
-
+                this.checkKing(arrayOfHorseMovements);
             }
 
+        } else if (playerTurn === 1 &&
+            this.color === "white" &&
+            isWhiteKingChecked &&
+            chessMap.get("whiteKing").numberOfThreats === 1) {
+
+            this.searchForThreat();
+
+        } else if (playerTurn === 2 &&
+            this.color === "black" &&
+            isBlackKingChecked &&
+            chessMap.get("blackKing").numberOfThreats === 1) {
+
+            this.SearchForThreat();
+            // search for threat. 
         }
-    }
-
-    this.checkKing = function(upperLeftMovement, lowerLeftMovement, upperRightMovement, lowerRightMovement) {
 
     }
+    this.searchForThreat = function() {
+
+    };
+}
+
+this.checkKing = function(arrayOfHorseMovements) {
+
+    for (var i = 0; i < arrayOfHorseMovements.length; i++) {
+        var squareOccupant = chessMap.get($(arrayOfHorseMovements[i]).children().attr("id"));
+
+        if (squareOccupant instanceof king && squareOccupant.color === "white" && this.color === "black") {
+            isWhiteKingChecked = true;
+        } else if (squareOccupant instanceof king && squareOccupant.color === "black" && this.color === "white") {
+            isBlackKingChecked = true;
+        }
 
 
-};
+    }
+
+}
+}
 
 function pawn(color, pieceType, image, isCaptured, currentSquare, canAdvanceTwice) {
     piece.call(this, color, pieceType, image, isCaptured, currentSquare);
@@ -292,9 +336,9 @@ function pawn(color, pieceType, image, isCaptured, currentSquare, canAdvanceTwic
 };
 
 
-function add(x, y) {
-    return x + y + 1;
-}
+// function add(x, y) {
+//     return x + y + 1;
+// }
 
 
 var unitTests = {};
@@ -353,7 +397,6 @@ function dropPiece(ev) {
         }
 
         switchTurns();
-
         resetColors();
 
     } else if (squareColor === colorGreen) {
@@ -370,13 +413,14 @@ function dropPiece(ev) {
         }
 
         if (pieceMoved instanceof king && pieceMoved.color === "white") {
-            isWhiteKingChecked === false;
+            isWhiteKingChecked = false;
         }
 
         if (pieceMoved instanceof king && pieceMoved.color === "black") {
-            isBlackKingChecked === false;
+            isBlackKingChecked = false;
         }
 
+        pieceMoved.searchForKing(ev);
         switchTurns();
         resetColors();
     }
@@ -572,7 +616,7 @@ function initializeBlackKnights() {
 // is declared in initializePieces()
 
 function highlightedWP(event) {
-    if (playerTurn === 1 && isWhiteKingChecked === false) {
+    if (playerTurn === 1 && !isWhiteKingChecked) {
         resetColors();
         load(event.target);
         var currentHighlightedPiece = chessMap.get(event.target.id);
@@ -637,7 +681,7 @@ function highlightedWP(event) {
 // highlights possible black pawn moves when clicked
 function highlightedBP(event) {
 
-    if (playerTurn === 2) {
+    if (playerTurn === 2 && isBlackKingChecked === false) {
         resetColors();
         load(event.target);
         var currentHighlightedPiece = chessMap.get(event.target.id);
@@ -700,7 +744,7 @@ function highlightedWB(event) {
 
     // Create a mapping for possible bishop attack positions. 
 
-    if (playerTurn === 1 && isWhiteKingChecked === false) {
+    if (playerTurn === 1 && !isWhiteKingChecked) {
         resetColors();
         load(event.target);
         var currentHighlightedPiece = chessMap.get(event.target.id);
@@ -737,8 +781,18 @@ function highlightDiagTopLeftSquaresForBishop(currentHighlightedPiece) {
 
         if ($(`#${column}${row}`).children().length === 1) {
 
+            var occupant = chessMap.get($(`#${column}${row}`).children().attr("id"));
+
             $(`#${column}${row}`).css("background-color", "green");
 
+            if (occupant instanceof king) {
+                if (currentHighlightedPiece.color === "white" && occupant === "black") {
+                    isBlackKingChecked = true;
+
+                } else if (currentHighlightedPiece.color === "black" && occupant === "white") {
+                    isWhiteKingChecked = true;
+                }
+            }
             squareIsOccupied = true;
         } else if (row === -1 || row === 9) {
             squareIsOccupied = true;
@@ -776,6 +830,16 @@ function highlightDiagBottomLeftSquaresForBishop(currentHighlightedPiece) {
 
             $(`#${column}${row}`).css("background-color", "green");
 
+
+            if (occupant instanceof king) {
+                if (currentHighlightedPiece.color === "white" && occupant === "black") {
+                    isBlackKingChecked = true;
+
+                } else if (currentHighlightedPiece.color === "black" && occupant === "white") {
+                    isWhiteKingChecked = true;
+                }
+            }
+
             squareIsOccupied = true;
         } else if (row === -1 || row === 9) {
             squareIsOccupied = true;
@@ -811,6 +875,16 @@ function highlightDiagBottomRightSquaresForBishop(currentHighlightedPiece) {
 
             $(`#${column}${row}`).css("background-color", "green");
 
+
+            if (occupant instanceof king) {
+                if (currentHighlightedPiece.color === "white" && occupant === "black") {
+                    isBlackKingChecked = true;
+
+                } else if (currentHighlightedPiece.color === "black" && occupant === "white") {
+                    isWhiteKingChecked = true;
+                }
+            }
+
             squareIsOccupied = true;
         } else if (row === -1 || row === 9) {
             squareIsOccupied = true;
@@ -845,6 +919,16 @@ function highlightDiagTopRightSquaresForBishop(currentHighlightedPiece) {
 
             $(`#${column}${row}`).css("background-color", "green");
 
+
+            if (occupant instanceof king) {
+                if (currentHighlightedPiece.color === "white" && occupant === "black") {
+                    isBlackKingChecked = true;
+
+                } else if (currentHighlightedPiece.color === "black" && occupant === "white") {
+                    isWhiteKingChecked = true;
+                }
+            }
+
             squareIsOccupied = true;
         } else if (row === -1 || row === 9) {
 
@@ -859,7 +943,7 @@ function highlightDiagTopRightSquaresForBishop(currentHighlightedPiece) {
 function highlightedBlackBishop(event) {
 
 
-    if (playerTurn === 2) {
+    if (playerTurn === 2 && isBlackKingChecked === false) {
         resetColors();
         load(event.target);
         var currentHighlightedPiece = chessMap.get(event.target.id);
