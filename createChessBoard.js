@@ -27,6 +27,10 @@ function piece(color, pieceType, image, isCaptured, currentSquare) {
     this.isCaptured = isCaptured; // bool
     this.currentSquare = currentSquare; // tuple
 
+    this.searchForKing = function() {
+
+
+    };
 
 };
 
@@ -56,7 +60,12 @@ function highlightKingSquares(kng) {
             var column = alphabetPositions.get(alphabetPositionsKeys.get(kng.currentSquare[0]) - 1 + square);
 
             if (square === 1 && numberPointer === kng.currentSquare[1]) {
-                // do nothing
+                // Check to see if there is any direct threats. If so, we set the globalVariable, 
+                // isWhiteKingChecked or isBlackKingChecked to true.
+
+                if (isBishopThreat(column, numberPointer, kng.color)) {
+                    isWhiteKingChecked === true;
+                }
 
             } else // threats need two arguments, 
             if (!(isRookThreat(kng) ||
@@ -242,37 +251,39 @@ function kingThreat(kng) {
 function knight(color, pieceType, image, isCaptured, currentSquare) {
     piece.call(this, color, pieceType, image, isCaptured, currentSquare);
     this.horseMovement = function(event) {
-        if (playerTurn === 1 && this.color === "white" || playerTurn === 2 && this.color === "black") {
+        if (playerTurn === 1 && this.color === "white" && isWhiteKingChecked === false || playerTurn === 2 && this.color === "black") {
             resetColors();
             load(event.target);
-            // create strings, and set them equal to IDs of the possible squares that the horse can move
 
-            this.oneUpTwoLeft = `#${alphabetPositions.get(alphabetPositionsKeys.get(this.currentSquare[0]) - 2 )}${this.currentSquare[1] + 1}`;
-            $(this.oneUpTwoLeft).css("background-color", "green");
+            // highlights possible knight movements. 
+            for (var i = 0; i < 2; i++) {
 
-            this.twoUpOneLeft = `#${alphabetPositions.get(alphabetPositionsKeys.get(this.currentSquare[0]) - 1 )}${this.currentSquare[1] + 2}`;
-            $(this.twoUpOneLeft).css("background-color", "green");
+                var upperLeftMovement = `#${alphabetPositions.get(alphabetPositionsKeys.get(this.currentSquare[0]) - 2 + i)}${this.currentSquare[1] + 1 + i}`;
+                var lowerLeftMovement = `#${alphabetPositions.get(alphabetPositionsKeys.get(this.currentSquare[0]) - 2 + i)}${this.currentSquare[1] - i - 1}`;
+                var upperRightMovement = `#${alphabetPositions.get(alphabetPositionsKeys.get(this.currentSquare[0]) + 2 - i)}${this.currentSquare[1] + i + 1}`;
+                var lowerRightMovement = `#${alphabetPositions.get(alphabetPositionsKeys.get(this.currentSquare[0]) + 2 - i)}${this.currentSquare[1] - i - 1}`;
 
-            this.oneUpTwoRight = `#${alphabetPositions.get(alphabetPositionsKeys.get(this.currentSquare[0]) + 2 )}${this.currentSquare[1] + 1}`;
-            $(this.oneUpTwoRight).css("background-color", "green");
 
-            this.twoUpOneRight = `#${alphabetPositions.get(alphabetPositionsKeys.get(this.currentSquare[0]) + 1 )}${this.currentSquare[1] + 2}`;
-            $(this.twoUpOneRight).css("background-color", "green");
 
-            this.oneDownTwoLeft = `#${alphabetPositions.get(alphabetPositionsKeys.get(this.currentSquare[0]) - 2 )}${this.currentSquare[1] - 1}`;
-            $(this.oneDownTwoLeft).css("background-color", "green");
+                $(upperLeftMovement).css("background-color", "green");
+                $(lowerLeftMovement).css("background-color", "green");
+                $(upperRightMovement).css("background-color", "green");
+                $(lowerRightMovement).css("background-color", "green");
 
-            this.twoDownOneLeft = `#${alphabetPositions.get(alphabetPositionsKeys.get(this.currentSquare[0]) - 1 )}${this.currentSquare[1] - 2}`;
-            $(this.twoDownOneLeft).css("background-color", "green");
 
-            this.oneDownTwoRight = `#${alphabetPositions.get(alphabetPositionsKeys.get(this.currentSquare[0]) + 2 )}${this.currentSquare[1] - 1}`;
-            $(this.oneDownTwoRight).css("background-color", "green");
+                this.checkKing(upperLeftMovement, lowerLeftMovement, upperRightMovement, lowerRightMovement);
 
-            this.twoDownOneRight = `#${alphabetPositions.get(alphabetPositionsKeys.get(this.currentSquare[0]) + 1 )}${this.currentSquare[1] - 2}`;
-            $(this.twoDownOneRight).css("background-color", "green");
+
+            }
 
         }
     }
+
+    this.checkKing = function(upperLeftMovement, lowerLeftMovement, upperRightMovement, lowerRightMovement) {
+
+    }
+
+
 };
 
 function pawn(color, pieceType, image, isCaptured, currentSquare, canAdvanceTwice) {
@@ -332,7 +343,17 @@ function dropPiece(ev) {
             pieceMoved.canAdvanceTwice = false;
         }
 
+
+        if (pieceMoved instanceof king && pieceMoved.color === "white") {
+            isWhiteKingChecked = false;
+        }
+
+        if (pieceMoved instanceof king && pieceMoved.color === "black") {
+            isBlackKingChecked = false;
+        }
+
         switchTurns();
+
         resetColors();
 
     } else if (squareColor === colorGreen) {
@@ -346,6 +367,14 @@ function dropPiece(ev) {
         pieceMoved.currentSquare[1] = squareNumber;
         if (pieceMoved instanceof pawn) {
             pieceMoved.canAdvanceTwice = false;
+        }
+
+        if (pieceMoved instanceof king && pieceMoved.color === "white") {
+            isWhiteKingChecked === false;
+        }
+
+        if (pieceMoved instanceof king && pieceMoved.color === "black") {
+            isBlackKingChecked === false;
         }
 
         switchTurns();
@@ -428,6 +457,11 @@ function initializeKings() {
     $(`#${alphabets[4]}1`).append(`<img src=${pieces[24].image} id="whiteKing" class="king" onclick="pieces[24].kingMovement(event)" width="50" height="50">`);
 
     chessMap.set("whiteKing", pieces[24]);
+
+    pieces.push(new king("black", "king", "/Users/ericgumba/Chess-Game/images/bK.png", false, [alphabets[4], 8]));
+    $(`#${alphabets[4]}8`).append(`<img src=${pieces[25].image} id="blackKing" class="king" onclick="pieces[25].kingMovement(event)" width="50" height="50">`);
+
+    chessMap.set("blackKing", pieces[25]);
 };
 
 function initializePawns() {
@@ -538,7 +572,7 @@ function initializeBlackKnights() {
 // is declared in initializePieces()
 
 function highlightedWP(event) {
-    if (playerTurn === 1) {
+    if (playerTurn === 1 && isWhiteKingChecked === false) {
         resetColors();
         load(event.target);
         var currentHighlightedPiece = chessMap.get(event.target.id);
@@ -666,7 +700,7 @@ function highlightedWB(event) {
 
     // Create a mapping for possible bishop attack positions. 
 
-    if (playerTurn === 1) {
+    if (playerTurn === 1 && isWhiteKingChecked === false) {
         resetColors();
         load(event.target);
         var currentHighlightedPiece = chessMap.get(event.target.id);
