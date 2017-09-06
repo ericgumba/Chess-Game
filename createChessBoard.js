@@ -9,6 +9,9 @@
 // another to king called number of threats. 
 //
 
+// todo: this.searchForThreat
+
+
 var cannon;
 var chessMap = new Map();
 var pieces = [];
@@ -265,70 +268,108 @@ function kingThreat(kng) {
 function knight(color, pieceType, image, isCaptured, currentSquare) {
     piece.call(this, color, pieceType, image, isCaptured, currentSquare);
     this.horseMovement = function(event) {
-        if (playerTurn === 1 && this.color === "white" && !isWhiteKingChecked || playerTurn === 2 && this.color === "black" && !isBlackKingChecked) {
-            resetColors();
-            load(event.target);
+            if (playerTurn === 1 && this.color === "white" && !isWhiteKingChecked || playerTurn === 2 && this.color === "black" && !isBlackKingChecked) {
+                resetColors();
+                load(event.target);
 
-            // highlights possible knight movements. 
-            for (var i = 0; i < 2; i++) {
+                // highlights possible knight movements. 
+                for (var i = 0; i < 2; i++) {
 
-                var upperLeftMovement = `#${alphabetPositions.get(alphabetPositionsKeys.get(this.currentSquare[0]) - 2 + i)}${this.currentSquare[1] + 1 + i}`;
-                var lowerLeftMovement = `#${alphabetPositions.get(alphabetPositionsKeys.get(this.currentSquare[0]) - 2 + i)}${this.currentSquare[1] - i - 1}`;
-                var upperRightMovement = `#${alphabetPositions.get(alphabetPositionsKeys.get(this.currentSquare[0]) + 2 - i)}${this.currentSquare[1] + i + 1}`;
-                var lowerRightMovement = `#${alphabetPositions.get(alphabetPositionsKeys.get(this.currentSquare[0]) + 2 - i)}${this.currentSquare[1] - i - 1}`;
+                    var upperLeftMovement = `#${alphabetPositions.get(alphabetPositionsKeys.get(this.currentSquare[0]) - 2 + i)}${this.currentSquare[1] + 1 + i}`;
+                    var lowerLeftMovement = `#${alphabetPositions.get(alphabetPositionsKeys.get(this.currentSquare[0]) - 2 + i)}${this.currentSquare[1] - i - 1}`;
+                    var upperRightMovement = `#${alphabetPositions.get(alphabetPositionsKeys.get(this.currentSquare[0]) + 2 - i)}${this.currentSquare[1] + i + 1}`;
+                    var lowerRightMovement = `#${alphabetPositions.get(alphabetPositionsKeys.get(this.currentSquare[0]) + 2 - i)}${this.currentSquare[1] - i - 1}`;
 
 
 
-                $(upperLeftMovement).css("background-color", "green");
-                $(lowerLeftMovement).css("background-color", "green");
-                $(upperRightMovement).css("background-color", "green");
-                $(lowerRightMovement).css("background-color", "green");
+                    $(upperLeftMovement).css("background-color", "green");
+                    $(lowerLeftMovement).css("background-color", "green");
+                    $(upperRightMovement).css("background-color", "green");
+                    $(lowerRightMovement).css("background-color", "green");
 
-                var arrayOfHorseMovements = [];
+                    var arrayOfHorseMovements = [];
 
-                arrayOfHorseMovements.push(upperLeftMovement, upperRightMovement, lowerLeftMovement, lowerRightMovement);
+                    arrayOfHorseMovements.push(upperLeftMovement, upperRightMovement, lowerLeftMovement, lowerRightMovement);
 
-                this.checkKing(arrayOfHorseMovements);
+                    this.checkKing(arrayOfHorseMovements);
+                }
+
+            } else if (playerTurn === 1 &&
+                this.color === "white" &&
+                isWhiteKingChecked &&
+                chessMap.get("whiteKing").numberOfThreats === 1) {
+
+                this.searchForThreat();
+
+            } else if (playerTurn === 2 &&
+                this.color === "black" &&
+                isBlackKingChecked &&
+                chessMap.get("blackKing").numberOfThreats === 1) {
+
+                this.SearchForThreat();
+                // search for threat. 
             }
 
-        } else if (playerTurn === 1 &&
-            this.color === "white" &&
-            isWhiteKingChecked &&
-            chessMap.get("whiteKing").numberOfThreats === 1) {
+        }
+        // todo fix the if statement in this function to search for whiteKing.
+    this.searchForThreat = function() {
+        var horseMovements = [];
 
-            this.searchForThreat();
+        for (var i = 0; i < 2; i++) {
 
-        } else if (playerTurn === 2 &&
-            this.color === "black" &&
-            isBlackKingChecked &&
-            chessMap.get("blackKing").numberOfThreats === 1) {
+            var upperLeftMovement = `#${alphabetPositions.get(alphabetPositionsKeys.get(this.currentSquare[0]) - 2 + i)}${this.currentSquare[1] + 1 + i}`;
+            var lowerLeftMovement = `#${alphabetPositions.get(alphabetPositionsKeys.get(this.currentSquare[0]) - 2 + i)}${this.currentSquare[1] - i - 1}`;
+            var upperRightMovement = `#${alphabetPositions.get(alphabetPositionsKeys.get(this.currentSquare[0]) + 2 - i)}${this.currentSquare[1] + i + 1}`;
+            var lowerRightMovement = `#${alphabetPositions.get(alphabetPositionsKeys.get(this.currentSquare[0]) + 2 - i)}${this.currentSquare[1] - i - 1}`;
 
-            this.SearchForThreat();
-            // search for threat. 
+
+
+            if (upperLeftMovement.children().length() === 1) {
+                if (chessMap.get(upperLeftMovement.children().attr("id")).threatensKing) {
+                    $(upperLeftMovement).css("background-color", "green");
+                }
+            }
+            if (lowerLeftMovement.children().length() === 1) {
+                if (chessMap.get(lowerLeftMovement.children().attr("id")).threatensKing) {
+                    $(lowerLeftMovement).css("background-color", "green");
+                }
+            }
+            if (upperRightMovement.children().length() === 1) {
+                if (chessMap.get(upperRightMovement.children().attr("id")).threatensKing) {
+                    $(upperRightMovement).css("background-color", "green");
+                }
+            }
+            if (lowerRightMovement.children().length() === 1) {
+                if (chessMap.get(lowerRightMovement.children().attr("id")).threatensKing) {
+                    $(lowerRightMovement).css("background-color", "green");
+                }
+            }
         }
 
-    }
-    this.searchForThreat = function() {
 
     };
-}
 
-this.checkKing = function(arrayOfHorseMovements) {
+    this.checkKing = function(arrayOfHorseMovements) {
 
-    for (var i = 0; i < arrayOfHorseMovements.length; i++) {
-        var squareOccupant = chessMap.get($(arrayOfHorseMovements[i]).children().attr("id"));
+        for (var i = 0; i < arrayOfHorseMovements.length; i++) {
+            var squareOccupant = chessMap.get($(arrayOfHorseMovements[i]).children().attr("id"));
 
-        if (squareOccupant instanceof king && squareOccupant.color === "white" && this.color === "black") {
-            isWhiteKingChecked = true;
-        } else if (squareOccupant instanceof king && squareOccupant.color === "black" && this.color === "white") {
-            isBlackKingChecked = true;
+            if (squareOccupant instanceof king && squareOccupant.color === "white" && this.color === "black") {
+                isWhiteKingChecked = true;
+                this.threatensKing = true;
+                squareOccupant.numberOfThreats += 1;
+            } else if (squareOccupant instanceof king && squareOccupant.color === "black" && this.color === "white") {
+                isBlackKingChecked = true;
+                this.threatensKing = true;
+                squareOccupant.numberOfThreats += 1;
+            }
+
+
         }
 
-
     }
+}
 
-}
-}
 
 function pawn(color, pieceType, image, isCaptured, currentSquare, canAdvanceTwice) {
     piece.call(this, color, pieceType, image, isCaptured, currentSquare);
@@ -390,10 +431,12 @@ function dropPiece(ev) {
 
         if (pieceMoved instanceof king && pieceMoved.color === "white") {
             isWhiteKingChecked = false;
+            pieceMoved.numberOfThreats = 0;
         }
 
         if (pieceMoved instanceof king && pieceMoved.color === "black") {
             isBlackKingChecked = false;
+            pieceMoved.numberOfThreats = 0;
         }
 
         switchTurns();
