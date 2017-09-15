@@ -25,7 +25,12 @@ for (var i = 0; i < alphabets.length; i++) {
 
 // each piece has a KingSearcher, which will be used after the end of each turn.
 // AS IN, after the end of each turn 
-function KingSearcher() {
+
+var unitTest = {
+
+}
+
+var KingSearcher = {
 
 
 
@@ -34,8 +39,11 @@ function KingSearcher() {
 
 var moveCreator = {
 
+    // returns the possible pawn moves as an array of strings. The strings are used to acces html.
     createPossiblePawnMoves: function(piece) {
-        possiblePawnMoves = [];
+        var possiblePawnMoves = [];
+
+        var k = parseInt(piece.currentNumber).toString();
 
         for (var i = 0; i < 3; i++) {
 
@@ -46,16 +54,16 @@ var moveCreator = {
                         alphabetPositionsKeys.get(
                             piece.currentAlphabet
                         ) - 1 + i
-                    ) + toString(parseInt(piece.currentNumber) + 1)
+                    ) + (parseInt(piece.currentNumber) + 1).toString()
                 );
             } else if (piece.color === "black") {
                 possiblePawnMoves.push(
                     "#" +
-                    alphabetPositions.get(
+                    alphabetPositions.get( //gets letter
                         alphabetPositionsKeys.get(
                             piece.currentAlphabet
                         ) - 1 + i
-                    ) + toString(parseInt(piece.currentNumber) - 1)
+                    ) + (parseInt(piece.currentNumber) - 1).toString() //gets number
                 );
             }
 
@@ -82,12 +90,12 @@ var LegalMoveChecker = {
         var currentSquare = `#${piece.currentAlphabet}${piece.currentNumber}`;
 
         if (piece.pieceType === "pawn") {
-            this.highlightPawnSquares();
+            this.highlightPawnSquares(piece);
         };
 
     },
 
-    highlightPawnSquares: function() {
+    highlightPawnSquares: function(piece) {
         var possiblePawnMoves = moveCreator.createPossiblePawnMoves(piece);
 
         for (var i = 0; i < possiblePawnMoves.length; i++) {
@@ -166,7 +174,7 @@ var chessBoard = {
         for (var i = 0; i < 16; i++) {
             if (i < 8) {
                 pieces.push(new Piece("white", "pawn", "/Users/ericgumba/Chess-Game/images/wP.png", false, alphabets[i], row[1]));
-                $("#" + alphabets[i] + "2").append(`<img src="/Users/ericgumba/Chess-Game/images/wP.png" id="whitePawn${i+1}" class="pawn" onclick="pieces[i].highlightSquares(event)" width="50" height="50">`);
+                $("#" + alphabets[i] + "2").append(`<img src="/Users/ericgumba/Chess-Game/images/wP.png" id="whitePawn${i+1}" class="pawn" onclick="pieces[${i}].highlightSquares(event)" width="50" height="50">`);
                 chessMap.set(`whitePawn${i+1}`, pieces[i]);
             } else {
                 pieces.push(new Piece("black", "pawn", "/Users/ericgumba/Chess-Game/images/bP.png", false, alphabets[i - 8], row[6]));
