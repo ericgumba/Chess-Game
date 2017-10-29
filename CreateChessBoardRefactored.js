@@ -35,6 +35,8 @@ var KingSearcher = {
 
 
 
+
+
 }
 
 
@@ -113,21 +115,40 @@ var moveCreator = {
         }
     },
     traverseUp: function(possiblePieceMoves, currentColumn, currentRow) {
-
-        if (currentRow === 9) { return; } else if ($(possiblePieceMoves[possiblePieceMoves.length - 1]).children().length === 1) { return; } else {
+        if (currentRow === 9) { return; } else {
             this.genMoves(possiblePieceMoves, currentColumn, currentRow);
-            this.traverseUp(possiblePieceMoves, currentColumn, currentRow + 1);
+            if ($(possiblePieceMoves[possiblePieceMoves.length - 1]).children().length === 1) { return; } else {
+                this.traverseUp(possiblePieceMoves, currentColumn, currentRow + 1);
+            }
         }
 
     },
     traverseDown: function(possiblePieceMoves, currentColumn, currentRow) {
-
-        if (currentRow === -1) { return; } else if ($(possiblePieceMoves[possiblePieceMoves.length - 1]).children().length === 1) { return; } else {
+        if (currentRow === -1) { return; } else {
             this.genMoves(possiblePieceMoves, currentColumn, currentRow);
-            this.traverseDown(possiblePieceMoves, currentColumn, currentRow - 1);
+            if ($(possiblePieceMoves[possiblePieceMoves.length - 1]).children().length === 1) { return; } else {
+                this.traverseDown(possiblePieceMoves, currentColumn, currentRow - 1);
+            }
         }
     },
 
+    traverseLeft: function(possiblePieceMoves, currentColumn, currentRow) {
+        if (currentColumn === -1) { return; } else {
+            this.genMoves(possiblePieceMoves, currentColumn, currentRow);
+            if ($(possiblePieceMoves[possiblePieceMoves.length - 1]).children().length === 1) { return; } else {
+                this.traverseLeft(possiblePieceMoves, currentColumn - 1, currentRow);
+            }
+        }
+    },
+
+    traverseRight: function(possiblePieceMoves, currentColumn, currentRow) {
+        if (currentColumn === 9) { return; } else {
+            this.genMoves(possiblePieceMoves, currentColumn, currentRow);
+            if ($(possiblePieceMoves[possiblePieceMoves.length - 1]).children().length === 1) { return; } else {
+                this.traverseRight(possiblePieceMoves, currentColumn + 1, currentRow);
+            }
+        }
+    },
     /*
                                 END FAMILY OF FUNCTIONS FOR BISHOP, ROOK & QUEEN
     */
@@ -141,6 +162,12 @@ var moveCreator = {
         this.traverseUp(possibleRookMoves, columnNumber, rowNumber + 1);
 
         this.traverseDown(possibleRookMoves, columnNumber, rowNumber - 1);
+
+        this.traverseLeft(possibleRookMoves, columnNumber - 1, rowNumber);
+
+        this.traverseRight(possibleRookMoves, columnNumber + 1, rowNumber);
+
+        return possibleRookMoves;
 
 
     },
@@ -178,6 +205,13 @@ var moveCreator = {
         this.diagBottomRight(possibleQueenMoves, columnNumber + 1, rowNumber - 1);
 
 
+        this.traverseUp(possibleQueenMoves, columnNumber, rowNumber + 1);
+
+        this.traverseDown(possibleQueenMoves, columnNumber, rowNumber - 1);
+
+        this.traverseLeft(possibleQueenMoves, columnNumber - 1, rowNumber);
+
+        this.traverseRight(possibleQueenMoves, columnNumber + 1, rowNumber);
         return possibleQueenMoves;
 
     },
@@ -290,6 +324,10 @@ var LegalMoveChecker = {
     highlightRookSquares: function(piece) {
 
         var possibleRookMoves = moveCreator.createPossibleRookMoves(piece.currentAlphabet, piece.currentNumber);
+
+        possibleRookMoves.forEach(function(element) {
+            chessBoard.highlight(element);
+        }, this);
     },
 
     highlightPawnSquares: function(piece) {
