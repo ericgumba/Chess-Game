@@ -32,15 +32,101 @@ var unitTest = {
 
 // 
 var KingSearcher = {
+    // boolean function. Returns true if square is safe for king to move in
+    isSafeSquare: function(square, kingColor) {
+
+        var isSafe = true;
+        if (kingColor === "white") {
+            var listOfAllBlackMoves = pieces.map(function(element) {
+                if (element.color === "black") {
+                    return moveCreator.getListOfMoves(element);
+                }
+            });
+
+            listOfAllBlackMoves = listOfAllBlackMoves.filter(function(n) { return n != undefined });
 
 
+            listOfAllBlackMoves.forEach(function(element) {
+
+                for (var i = 0; i < element.length; i++) {
+                    if (element[i] === square) {
+                        isSafe = false;
+                    }
+                }
+            }, this);
+        }
+        if (kingColor === "black") {
+            var listOfAllWhiteMoves = pieces.map(function(element) {
+                if (element.color === "white") {
+                    return moveCreator.getListOfMoves(element);
+                }
+            });
+
+            listOfAllWhiteMoves = listOfAllWhiteMoves.filter(function(n) { return n != undefined });
 
 
+            listOfAllWhiteMoves.forEach(function(element) {
+
+                for (var i = 0; i < element.length; i++) {
+                    if (element[i] === square) {
+                        isSafe = false;
+                    }
+                }
+            }, this);
+        }
+        return isSafe;
+    },
 
 }
 
 
 var moveCreator = {
+
+    createPossiblePawnAttacks: function(piece) {
+
+
+        var possiblePawnMoves = [];
+        var columnNumber = alphabetPositionsKeys.get(piece.currentAlphabet);
+        var rowNumber = parseInt(piece.currentNumber);
+
+        for (var i = 0; i < 2; i++) {
+            if (piece.color === "white") {
+                possiblePawnMoves.push("#" + alphabetPositions.get(columnNumber - 1 + i * 2) + (rowNumber + 1).toString());
+            } else if (piece.color === "black") {
+                possiblePawnMoves.push("#" + alphabetPositions.get(columnNumber - 1 + i * 2) + (rowNumber - 1).toString());
+            }
+        }
+
+        return possiblePawnMoves;
+
+    },
+
+    getListOfMoves: function(piece) {
+
+        if (piece.pieceType === "pawn") {
+            return this.createPossiblePawnAttacks(piece);
+        }
+
+        if (piece.pieceType === "bishop") {
+            return this.createPossibleBishopMoves(piece.currentAlphabet, piece.currentNumber);
+        }
+
+        if (piece.pieceType === "knight") {
+            return this.createPossibleKnightMoves(piece.currentAlphabet, piece.currentNumber);
+        }
+
+        if (piece.pieceType === "king") {
+            return this.createPossibleKingMoves(piece.currentAlphabet, piece.currentNumber);
+        }
+
+        if (piece.pieceType === "queen") {
+            return this.createPossibleQueenMoves(piece.currentAlphabet, piece.currentNumber);
+        }
+
+        if (piece.pieceType === "rook") {
+            return this.createPossibleRookMoves(piece.currentAlphabet, piece.currentNumber);
+        }
+    },
 
     genMoves: function(possibleMovesArray, colNumber, rowNumber) {
 
@@ -115,7 +201,7 @@ var moveCreator = {
         }
     },
     traverseUp: function(possiblePieceMoves, currentColumn, currentRow) {
-        if (currentRow === 9) { return; } else {
+        if (currentRow >= 9) { return; } else {
             this.genMoves(possiblePieceMoves, currentColumn, currentRow);
             if ($(possiblePieceMoves[possiblePieceMoves.length - 1]).children().length === 1) { return; } else {
                 this.traverseUp(possiblePieceMoves, currentColumn, currentRow + 1);
@@ -384,7 +470,9 @@ var LegalMoveChecker = {
         var possibleKingMoves = moveCreator.createPossibleKingMoves(piece.currentAlphabet, piece.currentNumber);
 
         possibleKingMoves.forEach(function(element) {
-            chessBoard.highlight(element);
+            if (KingSearcher.isSafeSquare(element, piece.color)) {
+                chessBoard.highlight(element);
+            }
         }, this);
 
     },
