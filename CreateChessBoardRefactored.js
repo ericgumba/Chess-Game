@@ -48,13 +48,13 @@ var KingSearcher = {
         piece.currentSquare.remove();
 
 
-    }
+    },
 
     //////////////////////////////////////////////////////////////////////////
     // boolean function. Returns true if square is safe for king to move in //
     //////////////////////////////////////////////////////////////////////////
 
-        isSafeSquare: function(square, kingColor) {
+    isSafeSquare: function(square, kingColor) {
 
         var isSafe = true;
         if (kingColor === "white") {
