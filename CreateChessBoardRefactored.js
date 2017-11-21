@@ -1,3 +1,6 @@
+// NOTES
+// there could be an issue in king searcher, where the method calls 
+
 /////////////////////////////////////////////////////////////////////////////////
 ////////////////////////GLOBAL VARIABLES OF THE PROGRAM//////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
@@ -32,8 +35,26 @@ var unitTest = {
 
 // 
 var KingSearcher = {
-    // boolean function. Returns true if square is safe for king to move in
-    isSafeSquare: function(square, kingColor) {
+
+    // when user picks up a piece, highlights only the moves where king is not in danger.
+    // pretends that the piece has already moved to that square. Checks to see if 
+    // any of the opposing pieces are attacking the king.
+
+    // temporarily remove a piece from the array so that it you know, does the thing. 
+
+    // TESTING PHASE
+    canMoveNonKingPiece: function(piece) {
+
+        piece.currentSquare.remove();
+
+
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // boolean function. Returns true if square is safe for king to move in //
+    //////////////////////////////////////////////////////////////////////////
+
+        isSafeSquare: function(square, kingColor) {
 
         var isSafe = true;
         if (kingColor === "white") {
@@ -83,6 +104,7 @@ var KingSearcher = {
 var moveCreator = {
 
     createPossiblePawnAttacks: function(piece) {
+
 
 
         var possiblePawnMoves = [];
@@ -382,6 +404,9 @@ var LegalMoveChecker = {
         var currentSquare = `#${piece.currentAlphabet}${piece.currentNumber}`;
 
         if (piece.pieceType === "pawn") {
+
+            KingSearcher.canMoveNonKingPiece(piece);
+
             this.highlightPawnSquares(piece);
         }
 
@@ -628,6 +653,7 @@ var chessBoard = {
         this.initializeKings();
         this.initializeQueens();
         this.initializeBlackRooks();
+        this.initializeWhiteRooks();
     },
 
     // pieces array will be at length = 16
@@ -710,12 +736,20 @@ var chessBoard = {
     initializeBlackRooks: function() {
         for (var i = 0; i < 2; i++) {
             pieces.push(new Piece("black", "rook", "/Users/ericgumba/Chess-Game/images/bR", false, alphabets[0 + (i * 7)], '8'));
-            $("#" + alphabets[0 + (i * 7)] + "8").append(`<img src="/Users/ericgumba/Chess-Game/images/bR.png" id=blackKnight${1+i} class="rook" onclick="pieces[${28+i}].highlightSquares(event)" width="50" height="50">`);
-            chessMap.set(`blackKnight${i+1}`, pieces[28 + i]);
+            $("#" + alphabets[0 + (i * 7)] + "8").append(`<img src="/Users/ericgumba/Chess-Game/images/bR.png" id=blackRook${1+i} class="rook" onclick="pieces[${28+i}].highlightSquares(event)" width="50" height="50">`);
+            chessMap.set(`blackRook${i+1}`, pieces[28 + i]);
         }
 
 
     },
+    initializeWhiteRooks: function() {
+        for (var i = 0; i < 2; i++) {
+            pieces.push(new Piece("white", "rook", "/Users/ericgumba/Chess-Game/images/wR", false, alphabets[0 + (i * 7)], '1'));
+            $("#" + alphabets[0 + (i * 7)] + "1").append(`<img src="/Users/ericgumba/Chess-Game/images/wR.png" id=whiteRook${1+i} class="rook" onclick="pieces[${30+i}].highlightSquares(event)" width="50" height="50">`);
+            chessMap.set(`whiteRook${i+1}`, pieces[30 + i]);
+        }
+
+    }
 };
 ///////////////////////////////////////////////////////////////////////
 /////////////////////////// ENTRY POINT OF PROGRAM/////////////////////
