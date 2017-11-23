@@ -9,7 +9,7 @@ var chessMap = new Map();
 var pieces = [];
 var playerTurn = 1;
 var isWhiteKingChecked = false; // unecessary?
-var isBlackKingChecked = false; // unnecessary?
+var isBlackKingChecked = false; // unnecessary? yes! =)
 var cannon;
 const alphabets = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 const row = ['1', '2', '3', '4', '5', '6', '7', '8'];
@@ -29,24 +29,88 @@ for (var i = 0; i < alphabets.length; i++) {
 // each piece has a KingSearcher, which will be used after the end of each turn.
 // AS IN, after the end of each turn 
 
-var unitTest = {
+function getKingLocation(kingColor) {
 
-}
+    var kingLocation = "";
+    for (var i = 0; i < pieces.length; i++) {
+        if (pieces[i].color === kingColor && pieces[i].pieceType === "king") {
+            kingLocation = pieces[i].getCurrentSquare();
+        }
+    }
+    return kingLocation;
 
-// 
+};
+
 var KingSearcher = {
 
-    // when user picks up a piece, highlights only the moves where king is not in danger.
-    // pretends that the piece has already moved to that square. Checks to see if 
-    // any of the opposing pieces are attacking the king.
+    doubleThreat: function(kingColor) {
 
-    // temporarily remove a piece from the array so that it you know, does the thing. 
+        var numberOfThreats = 0;
+
+        return numberOfThreats !== 2;
+    },
+
+    kingIsThreatened: function(kingColor) {
+        return !this.isSafeSquare(getKingLocation(kingColor), kingColor);
+    },
+
+    isAThreat: function(kingLocation, opposingPiece) {
+
+        var isAThreat = false;
+        var opposingMoves = moveCreator.getListOfMoves(opposingPiece);
+
+
+        opposingMoves.forEach(element => {
+            if (element === kingLocation) {
+                isAThreat = true;
+            }
+        });
+        return isAThreat;
+
+    },
+    // => boolean
+    canEat: function(piece, opposingPiece) {
+
+        return (this.isAThreat(getKingLocation(piece.color), opposingPiece));
+
+    },
 
     // TESTING PHASE
-    canMoveNonKingPiece: function(piece) {
+    canMoveNonKingPiece: function(piece, possibleMove) {
 
-        piece.currentSquare.remove();
+        var isSafe = true;
+        cannon.remove();
 
+        // place the piece in the potential spot. Meaning, canMoveNonKingPiece should be placed
+        // in the potential square.
+
+        // probelm, can we get awway with not having events? YES
+
+        // the final piece of the puzzle. 
+
+        //if(! this.doubleThreat(piece.color))
+
+        if ($(possibleMove).children().length === 1 && this.kingIsThreatened(piece.color)) {
+
+            // pretend that that piece got eaten up. by this piece, then use the isSafe method. 
+
+            // CHECK POINT
+            var opposingPiece = chessMap.get($(possibleMove).children().attr("id"));
+            isSafe = this.canEat(piece, opposingPiece);
+
+        } else {
+
+            $(possibleMove).append(cannon);
+
+            isSafe = this.isSafeSquare(getKingLocation(piece.color), piece.color);
+
+
+        }
+
+        $(piece.getCurrentSquare()).append(cannon);
+        return isSafe;
+
+        //return isSafe;
 
     },
 
@@ -160,7 +224,7 @@ var moveCreator = {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////// These family of functions, //////////////////////////////////////////////////
     ////////////////////////diagBottomRight, diagTopLeft, traverseUp, traverseLeft//////////////////////////////////
-    ///////////////// are used for the bishop, rook and queen pieces////////////////////////////////////////////////
+    ////////////////////////// are used for the bishop, rook and queen pieces////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     diagBottomRight: function(possibleBishopMoves, currentColumnNumber, currentRowNumber) {
@@ -400,12 +464,11 @@ var LegalMoveChecker = {
     */
     highlightSquares: function(event, piece) {
 
+
         cannon = event.target;
         var currentSquare = `#${piece.currentAlphabet}${piece.currentNumber}`;
 
         if (piece.pieceType === "pawn") {
-
-            KingSearcher.canMoveNonKingPiece(piece);
 
             this.highlightPawnSquares(piece);
         }
@@ -447,11 +510,15 @@ var LegalMoveChecker = {
         for (var i = 0; i < possiblePawnMoves.length; i++) {
 
             // a piece occupies top left or top right spot, so highlight it.
-            if ($(possiblePawnMoves[i]).children().length === 1 && i !== 1) {
+            if ($(possiblePawnMoves[i]).children().length === 1 &&
+                i !== 1 &&
+                KingSearcher.canMoveNonKingPiece(piece, possiblePawnMoves[i])) {
                 chessBoard.highlight(possiblePawnMoves[i]);
             }
             // highlight forward square.
-            else if ($(possiblePawnMoves[i]).children().length === 0 && i === 1) {
+            else if ($(possiblePawnMoves[i]).children().length === 0 &&
+                i === 1 &&
+                KingSearcher.canMoveNonKingPiece(piece, possiblePawnMoves[i])) {
                 chessBoard.highlight(possiblePawnMoves[i]);
 
                 // Special case of double move for pawn 
@@ -477,7 +544,7 @@ var LegalMoveChecker = {
 
 
         possibleBishopMoves.forEach(function(element) {
-            chessBoard.highlight(element);
+            if (KingSearcher.canMoveNonKingPiece(piece, element)) { chessBoard.highlight(element); }
         }, this);
     },
 
@@ -533,6 +600,8 @@ function Piece(color, pieceType, image, isCaptured, currentAlphabet, currentNumb
         chessBoard.resetColors();
         LegalMoveChecker.highlightSquares(event, this);
     }
+
+    this.getCurrentSquare = function() { return "#" + this.currentAlphabet + this.currentNumber; }
 };
 
 

@@ -508,7 +508,7 @@ function createBoard() {
                 ondrop="drop(event)" onclick="dropPiece(event)"></div>`;
             } else {
                 strHTML += `<div class="black_square" id="${alphabets[column]}${8-row}"
-                ondrop="drop(event)" onclick="dropPiece(event)"></div>`;
+                 ondrop="drop(event)" onclick="dropPiece(event)"></div>`;
             }
         }
         strHTML += "</div>";
