@@ -12,6 +12,10 @@
     border: 4px solid #FF0000;
 }
 
+#promotional-pieces {
+    border: 8px solid #444444;
+}
+
 .black_square,
 .white_square {
     width: 48px;

@@ -1,5 +1,7 @@
 // NOTES
 // there could be an issue in king searcher, where the method calls 
+// IF THERE ARE BUGS, QUEEN AND ROOK WERE THE ONES LEFT UNTESTED IN RELATION TO KING SEARCHER.
+//
 
 /////////////////////////////////////////////////////////////////////////////////
 ////////////////////////GLOBAL VARIABLES OF THE PROGRAM//////////////////////////
@@ -8,8 +10,6 @@
 var chessMap = new Map();
 var pieces = [];
 var playerTurn = 1;
-var isWhiteKingChecked = false; // unecessary?
-var isBlackKingChecked = false; // unnecessary? yes! =)
 var cannon;
 const alphabets = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 const row = ['1', '2', '3', '4', '5', '6', '7', '8'];
@@ -29,6 +29,55 @@ for (var i = 0; i < alphabets.length; i++) {
 // each piece has a KingSearcher, which will be used after the end of each turn.
 // AS IN, after the end of each turn 
 
+
+// 
+var promoter = {
+
+    createPromotionPieces: function(piece) {
+        // var strHTML = 
+
+        // create strHTML for <promotion pieces> r, q, h, b in form of list -> li
+        // freeze being able to move 
+        // onclick promoteToRook, etc... 
+        // replace piece with rook info.
+        // append that piece with 
+
+        var strHTML = "<div>";
+        strHTML +=
+            '<img src="/Users/ericgumba/Chess-Game/images/wK.png" width="50" height="50">' +
+            '<img src="/Users/ericgumba/Chess-Game/images/wB.png" width="50" height="50">' +
+            '<img src="/Users/ericgumba/Chess-Game/images/wQ.png" width="50" height="50">' +
+            '<img src="/Users/ericgumba/Chess-Game/images/wR.png" width="50" height="50">';
+
+        strHTML += "</div>";
+
+        alert("test");
+        $("#promotionalPieces").html(strHTML);
+
+        strHTML = "";
+        $("#promotionalPieces").html(strHTML);
+
+
+    },
+
+
+
+}
+
+function testPromotion() {
+
+
+    alert("The final puzzle piece for real though.");
+
+    var removePiece = $("#a7").children().remove();
+
+    var removePiece2 = $("#a8").children().remove();
+
+    var addPiece = $("#a7").append($("#a2").children());
+
+
+}
+
 function getKingLocation(kingColor) {
 
     var kingLocation = "";
@@ -45,9 +94,59 @@ var KingSearcher = {
 
     doubleThreat: function(kingColor) {
 
-        var numberOfThreats = 0;
+        var square = getKingLocation(kingColor);
 
-        return numberOfThreats !== 2;
+        var numberOfThreats = 0;
+        if (kingColor === "white") {
+            var listOfAllBlackMoves = pieces.map(function(element) {
+                if (element.color === "black") {
+                    return moveCreator.getListOfMoves(element);
+                }
+            });
+
+            listOfAllBlackMoves = listOfAllBlackMoves.filter(function(n) { return n != undefined });
+
+
+            listOfAllBlackMoves.forEach(function(element) {
+
+                for (var i = 0; i < element.length; i++) {
+                    if (element[i] === square) {
+                        numberOfThreats += 1;
+                    }
+                }
+            }, this);
+        }
+        if (kingColor === "black") {
+            var listOfAllWhiteMoves = pieces.map(function(element) {
+                if (element.color === "white") {
+                    return moveCreator.getListOfMoves(element);
+                }
+            });
+
+            listOfAllWhiteMoves = listOfAllWhiteMoves.filter(function(n) { return n != undefined });
+
+
+            listOfAllWhiteMoves.forEach(function(element) {
+
+                for (var i = 0; i < element.length; i++) {
+                    if (element[i] === square) {
+                        numberOfThreats += 1;
+                    }
+                }
+            }, this);
+        }
+        return numberOfThreats === 2;
+    },
+
+    canMoveKing: function(king, potentialSquare) {
+
+        cannon.remove();
+        $(potentialSquare).append(cannon);
+        var isSafe = this.isSafeSquare(potentialSquare, king.color);
+        $(king.getCurrentSquare()).append(cannon);
+
+        return isSafe;
+
     },
 
     kingIsThreatened: function(kingColor) {
@@ -87,24 +186,25 @@ var KingSearcher = {
         // probelm, can we get awway with not having events? YES
 
         // the final piece of the puzzle. 
-
-        //if(! this.doubleThreat(piece.color))
-
-        if ($(possibleMove).children().length === 1 && this.kingIsThreatened(piece.color)) {
-
-            // pretend that that piece got eaten up. by this piece, then use the isSafe method. 
-
-            // CHECK POINT
-            var opposingPiece = chessMap.get($(possibleMove).children().attr("id"));
-            isSafe = this.canEat(piece, opposingPiece);
-
+        if (this.doubleThreat(piece.color)) {
+            isSafe = false;
         } else {
 
-            $(possibleMove).append(cannon);
+            if ($(possibleMove).children().length === 1 && this.kingIsThreatened(piece.color)) {
 
-            isSafe = this.isSafeSquare(getKingLocation(piece.color), piece.color);
+                // pretend that that piece got eaten up. by this piece, then use the isSafe method. 
+
+                var opposingPiece = chessMap.get($(possibleMove).children().attr("id"));
+                isSafe = this.canEat(piece, opposingPiece);
+
+            } else {
+
+                $(possibleMove).append(cannon);
+
+                isSafe = this.isSafeSquare(getKingLocation(piece.color), piece.color);
 
 
+            }
         }
 
         $(piece.getCurrentSquare()).append(cannon);
@@ -221,10 +321,10 @@ var moveCreator = {
 
     },
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////// These family of functions, //////////////////////////////////////////////////
-    ////////////////////////diagBottomRight, diagTopLeft, traverseUp, traverseLeft//////////////////////////////////
-    ////////////////////////// are used for the bishop, rook and queen pieces////////////////////////////////////////////////
+    ////////////////////////diagBottomRight, diagTopLeft, traverseUp, traverseLeft///////////////////////////////////
+    ////////////////////////// are used for the bishop, rook and queen pieces////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     diagBottomRight: function(possibleBishopMoves, currentColumnNumber, currentRowNumber) {
@@ -500,7 +600,7 @@ var LegalMoveChecker = {
         var possibleRookMoves = moveCreator.createPossibleRookMoves(piece.currentAlphabet, piece.currentNumber);
 
         possibleRookMoves.forEach(function(element) {
-            chessBoard.highlight(element);
+            if (KingSearcher.canMoveNonKingPiece(piece, element)) chessBoard.highlight(element);
         }, this);
     },
 
@@ -530,7 +630,8 @@ var LegalMoveChecker = {
                         doubleMove = parseInt(piece.currentNumber) - 2;
                     }
                     parseInt(piece.currentNumber);
-                    chessBoard.highlight(`#${piece.currentAlphabet}${doubleMove.toString()}`);
+                    if (KingSearcher.canMoveNonKingPiece(piece, `#${piece.currentAlphabet}${doubleMove.toString()}`))
+                        chessBoard.highlight(`#${piece.currentAlphabet}${doubleMove.toString()}`);
                 }
 
             }
@@ -552,8 +653,7 @@ var LegalMoveChecker = {
         var possibleKnightMoves = moveCreator.createPossibleKnightMoves(piece.currentAlphabet, piece.currentNumber);
 
         possibleKnightMoves.forEach(function(element) {
-
-            chessBoard.highlight(element);
+            if (KingSearcher.canMoveNonKingPiece(piece, element)) chessBoard.highlight(element);
         }, this);
     },
 
@@ -562,7 +662,7 @@ var LegalMoveChecker = {
         var possibleKingMoves = moveCreator.createPossibleKingMoves(piece.currentAlphabet, piece.currentNumber);
 
         possibleKingMoves.forEach(function(element) {
-            if (KingSearcher.isSafeSquare(element, piece.color)) {
+            if (KingSearcher.canMoveKing(piece, element)) {
                 chessBoard.highlight(element);
             }
         }, this);
@@ -574,7 +674,7 @@ var LegalMoveChecker = {
         var possibleQueenMoves = moveCreator.createPossibleQueenMoves(piece.currentAlphabet, piece.currentNumber);
 
         possibleQueenMoves.forEach(function(element) {
-            chessBoard.highlight(element);
+            if (KingSearcher.canMoveNonKingPiece(piece, element)) chessBoard.highlight(element);
         }, this);
 
     },
@@ -648,6 +748,16 @@ var chessBoard = {
                 pieceMoved.doubleMoveUsed = true;
             }
 
+            // CHECKPOINT HUGE POSSIbILITY FOR BUG
+
+            if (pieceMoved.pieceType === "pawn" &&
+                pieceMoved.color === "white" &&
+                pieceMoved.squareNumber === '8') {
+
+                promoter.createPromotionPieces(pieceMoved);
+
+            }
+
             this.switchTurns();
             this.resetColors();
 
@@ -666,6 +776,13 @@ var chessBoard = {
                 pieceMoved.doubleMoveUsed = true;
             }
 
+            if (pieceMoved.pieceType === "pawn" &&
+                pieceMoved.color === "white" &&
+                pieceMoved.currentNumber === 8) {
+
+                promoter.createPromotionPieces(pieceMoved);
+
+            }
             this.switchTurns();
             this.resetColors();
         }
