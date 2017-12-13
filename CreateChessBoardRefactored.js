@@ -859,7 +859,7 @@ var chessBoard = {
 
             if (pieceMoved.pieceType === "pawn" &&
                 pieceMoved.color === "white" &&
-                pieceMoved.squareNumber === '8') {
+                pieceMoved.currentNumber === 8) {
 
                 promoter.createPromotionPieces(pieceMoved);
 
