@@ -1,12 +1,9 @@
-// NOTES
-// there could be an issue in king searcher, where the method calls 
-// IF THERE ARE BUGS, QUEEN AND ROOK WERE THE ONES LEFT UNTESTED IN RELATION TO KING SEARCHER.
-//
+// PIECES.LENGHT NEEDS TO BE REMOVED I THINK.
 
 /////////////////////////////////////////////////////////////////////////////////
 ////////////////////////GLOBAL VARIABLES OF THE PROGRAM//////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
-
+var pawnToBePromoted;
 var chessMap = new Map();
 var pieces = [];
 var playerTurn = 1;
@@ -26,15 +23,91 @@ for (var i = 0; i < alphabets.length; i++) {
 ////////////////////////OBJECTS OF THE PROGRAM///////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-// each piece has a KingSearcher, which will be used after the end of each turn.
-// AS IN, after the end of each turn 
-
-
-// 
 var promoter = {
+
+
+    promotePawn: strPiece => {
+
+
+
+        switch (strPiece) {
+            case "queen":
+
+                pawnToBePromoted.pieceType = "queen";
+
+                if (pawnToBePromoted.color === "white") {
+                    $(pawnToBePromoted.getCurrentSquare()).
+                    children().attr("src", "/Users/ericgumba/Chess-Game/images/wQ.png");
+                    playerTurn = 2;
+                    $("#promotionalPieces").html("");
+
+                } else {
+                    $(pawnToBePromoted.getCurrentSquare()).
+                    children().attr("src", "/Users/ericgumba/Chess-Game/images/bQ.png");
+                    playerTurn = 1;
+                    $("#promotionalPieces").html("");
+                }
+                break;
+            case "rook":
+
+                pawnToBePromoted.pieceType = "rook";
+                if (pawnToBePromoted.color === "white") {
+                    $(pawnToBePromoted.getCurrentSquare()).
+                    children().attr("src", "/Users/ericgumba/Chess-Game/images/wR.png");
+                    playerTurn = 2;
+                    $("#promotionalPieces").html("");
+
+                } else {
+                    $(pawnToBePromoted.getCurrentSquare()).
+                    children().attr("src", "/Users/ericgumba/Chess-Game/images/bR.png");
+                    playerTurn = 1;
+                    $("#promotionalPieces").html("");
+                }
+                break;
+
+            case "bishop":
+
+                pawnToBePromoted.pieceType = "bishop";
+                if (pawnToBePromoted.color === "white") {
+                    $(pawnToBePromoted.getCurrentSquare()).
+                    children().attr("src", "/Users/ericgumba/Chess-Game/images/wB.png");
+                    playerTurn = 2;
+                    $("#promotionalPieces").html("");
+
+                } else {
+                    $(pawnToBePromoted.getCurrentSquare()).
+                    children().attr("src", "/Users/ericgumba/Chess-Game/images/bB.png");
+                    playerTurn = 1;
+                    $("#promotionalPieces").html("");
+                }
+                break;
+
+            case "knight":
+
+                pawnToBePromoted.pieceType = "knight";
+                if (pawnToBePromoted.color === "white") {
+                    $(pawnToBePromoted.getCurrentSquare()).
+                    children().attr("src", "/Users/ericgumba/Chess-Game/images/wR.png");
+                    playerTurn = 2;
+                    $("#promotionalPieces").html("");
+
+                } else {
+                    $(pawnToBePromoted.getCurrentSquare()).
+                    children().attr("src", "/Users/ericgumba/Chess-Game/images/bR.png");
+                    playerTurn = 1;
+                    $("#promotionalPieces").html("");
+                }
+                break;
+            default:
+                break;
+        }
+    },
 
     createPromotionPieces: function(piece) {
         // var strHTML = 
+
+        pawnToBePromoted = piece;
+
 
         // create strHTML for <promotion pieces> r, q, h, b in form of list -> li
         // freeze being able to move 
@@ -43,19 +116,28 @@ var promoter = {
         // append that piece with 
 
         var strHTML = "<div>";
-        strHTML +=
-            '<img src="/Users/ericgumba/Chess-Game/images/wK.png" width="50" height="50">' +
-            '<img src="/Users/ericgumba/Chess-Game/images/wB.png" width="50" height="50">' +
-            '<img src="/Users/ericgumba/Chess-Game/images/wQ.png" width="50" height="50">' +
-            '<img src="/Users/ericgumba/Chess-Game/images/wR.png" width="50" height="50">';
 
+        if (piece.color === "white") {
+            strHTML +=
+                '<img src="/Users/ericgumba/Chess-Game/images/wN.png" width="50" height="50" onclick=promoter.promotePawn("knight")>' +
+                '<img src="/Users/ericgumba/Chess-Game/images/wB.png" width="50" height="50" onclick=promoter.promotePawn("bishop")>' +
+                '<img src="/Users/ericgumba/Chess-Game/images/wQ.png" width="50" height="50" onclick=promoter.promotePawn("queen")>' +
+                '<img src="/Users/ericgumba/Chess-Game/images/wR.png" width="50" height="50" onclick=promoter.promotePawn("rook")>';
+        } else {
+            strHTML +=
+                '<img src="/Users/ericgumba/Chess-Game/images/bN.png" width="50" height="50" onclick=promoter.promotePawn("knight")>' +
+                '<img src="/Users/ericgumba/Chess-Game/images/bB.png" width="50" height="50" onclick=promoter.promotePawn("bishop")>' +
+                '<img src="/Users/ericgumba/Chess-Game/images/bQ.png" width="50" height="50" onclick=promoter.promotePawn("queen")>' +
+                '<img src="/Users/ericgumba/Chess-Game/images/bR.png" width="50" height="50" onclick=promoter.promotePawn("rook")>';
+
+        }
         strHTML += "</div>";
 
-        alert("test");
+        playerTurn = 0;
         $("#promotionalPieces").html(strHTML);
 
-        strHTML = "";
-        $("#promotionalPieces").html(strHTML);
+        // strHTML = "";
+        // $("#promotionalPieces").html(strHTML);
 
 
     },
@@ -64,16 +146,31 @@ var promoter = {
 
 }
 
+function testBlackPromotion() {
+
+
+    var removePiece = $("#a2").children().remove();
+
+    var removePiece2 = $("#a1").children().remove();
+
+    var addPiece = $("#a2").append($("#a7").children());
+
+
+
+}
+
 function testPromotion() {
 
+    var change = $("#a7").children().attr("src", "/Users/ericgumba/Chess-Game/images/bQ.png");
 
-    alert("The final puzzle piece for real though.");
 
     var removePiece = $("#a7").children().remove();
 
     var removePiece2 = $("#a8").children().remove();
 
     var addPiece = $("#a7").append($("#a2").children());
+
+    pieces.pop();
 
 
 }
@@ -289,6 +386,7 @@ var moveCreator = {
 
     getListOfMoves: function(piece) {
 
+        if (piece.isCaptured === true) return "piece died fool";
         if (piece.pieceType === "pawn") {
             return this.createPossiblePawnAttacks(piece);
         }
@@ -697,8 +795,11 @@ function Piece(color, pieceType, image, isCaptured, currentAlphabet, currentNumb
 
     this.highlightSquares = function(event) {
 
-        chessBoard.resetColors();
-        LegalMoveChecker.highlightSquares(event, this);
+        if (this.color === "white" && playerTurn === 1 || this.color === "black" && playerTurn === 2) {
+            chessBoard.resetColors();
+            LegalMoveChecker.highlightSquares(event, this);
+        }
+
     }
 
     this.getCurrentSquare = function() { return "#" + this.currentAlphabet + this.currentNumber; }
@@ -728,7 +829,12 @@ var chessBoard = {
     dropPiece: function(event) {
 
 
+
+
         var occupiedSquareColor = $(event.target).parents().css("background-color");
+
+        // var occupiedSquareColor = $(event.target).children().length;
+
         var squareColor = $(event.target).css("background-color");
         var colorGreen = "rgb(0, 128, 0)";
         var occupiedSquareID = $(event.target).parent().attr("id");
@@ -737,10 +843,11 @@ var chessBoard = {
 
             var squareAlphabet = occupiedSquareID.charAt(0);
             var squareNumber = parseInt(occupiedSquareID.charAt(1));
-            var pieceMoved = chessMap.get(cannon);
+            var pieceMoved = chessMap.get(cannon.id);
 
             this.captureEnemyAndDropPieceAtNewSquare(event);
 
+            // FINALE
             pieceMoved.currentAlphabet = squareAlphabet;
             pieceMoved.currentNumber = squareNumber;
 
@@ -758,6 +865,13 @@ var chessBoard = {
 
             }
 
+            if (pieceMoved.pieceType === "pawn" &&
+                pieceMoved.color === "black" &&
+                pieceMoved.currentNumber === 1) {
+
+                promoter.createPromotionPieces(pieceMoved);
+
+            }
             this.switchTurns();
             this.resetColors();
 
@@ -783,6 +897,14 @@ var chessBoard = {
                 promoter.createPromotionPieces(pieceMoved);
 
             }
+
+            if (pieceMoved.pieceType === "pawn" &&
+                pieceMoved.color === "black" &&
+                pieceMoved.currentNumber === 1) {
+
+                promoter.createPromotionPieces(pieceMoved);
+
+            }
             this.switchTurns();
             this.resetColors();
         }
@@ -791,11 +913,14 @@ var chessBoard = {
 
     switchTurns: function() {
 
-        if (playerTurn === 1) { playerTurn = 2; }
-        if (playerTurn === 2) { playerTurn = 1; }
+        if (playerTurn === 1) { playerTurn = 2; } else if (playerTurn === 2) { playerTurn = 1; }
     },
 
     captureEnemyAndDropPieceAtNewSquare: function(event) {
+
+        var removePiece = chessMap.get(event.target.id);
+
+        removePiece.isCaptured = true;
 
         $(event.target).parent().append(cannon);
         event.target.remove();
